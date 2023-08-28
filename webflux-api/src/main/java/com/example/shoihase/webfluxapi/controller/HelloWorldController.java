@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 public class HelloWorldController extends ReactorHelloWorldSimpleServiceGrpc.HelloWorldSimpleServiceImplBase {
 
     @Override
-    public reactor.core.publisher.Mono<com.google.rpc.Status> saySimpleHello(reactor.core.publisher.Mono<com.google.protobuf.Empty> request) {
+    public Mono<com.google.rpc.Status> saySimpleHello(reactor.core.publisher.Mono<com.google.protobuf.Empty> request) {
         return request.log().thenReturn(Status.newBuilder().setCode(0).setMessage("test").build());
     }
 }

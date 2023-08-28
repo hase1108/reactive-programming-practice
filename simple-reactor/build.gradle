@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'application'
+    id "io.spring.dependency-management" version "1.1.2"
+}
+
+group = 'org.example'
+version = "0.0.1-SNAPSHOT"
+sourceCompatibility = "17"
+
+application {
+    mainClassName = "com.example.SampleReactor"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.projectreactor:reactor-bom:2022.0.9"
+    }
+}
+
+dependencies {
+    implementation 'io.projectreactor:reactor-core'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
