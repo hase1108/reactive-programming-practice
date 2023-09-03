@@ -124,6 +124,13 @@ operatorは基本的には前段のPublisherに対して処理を追加し、新
 なお、operatorの実装的には独自にoperatorクラスが存在しているわけではなく、各Publisherに定義されていることに注意すること。
 https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
 
+### Publisher/Operator/Subscriberの関係
+
+Publisher/Operator/Subscriberは、従来の命令型プログラミングと比較すると相関がわかりにくい。
+そのため、理解の一助として、JavaDocなどでPublisherの提供するデータストリームがoperator/subscriberなどがどのように処理されるかが図で表されている。
+
+https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
+
 operatorは非常にたくさんの種類があることから、全て紹介することが不可能だが、代表的なものを以下に示す。
 
 #### Map
@@ -131,13 +138,6 @@ operatorは非常にたくさんの種類があることから、全て紹介す
 #### FlatMap
 
 #### Filter
-
-### Publisher/Operator/Subscriberの関係
-
-Publisher/Operator/Subscriberは、従来の命令型プログラミングと比較すると相関がわかりにくい。
-そのため、理解の一助として、JavaDocなどでPublisherの提供するデータストリームがoperator/subscriberなどがどのように処理されるかが図で表されている。
-
-https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
 
 ## Chapter3
 
