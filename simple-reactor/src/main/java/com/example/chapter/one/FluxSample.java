@@ -4,7 +4,11 @@ import reactor.core.publisher.Flux;
 
 public class FluxSample {
 
-    public Flux<Integer> simpleFlax(int num){
+    public Flux<Integer> simpleFlux(int num){
+        return Flux.range(0, num);
+    }
 
+    public Flux<Integer> emptyFlux(){
+        return Flux.empty();
     }
 }

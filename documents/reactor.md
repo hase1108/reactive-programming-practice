@@ -71,7 +71,7 @@ ProcessorはSubscriberとPublisher両方の責務を負う。
 
 ## Chapter1
 
-### Reactor
+### ReactorにおけるReactive Stream APIの実装
 
 #### Publisher
 
@@ -82,3 +82,28 @@ ReactorにおけるReactive StreamのPublisher interfaceの実装は大きく以
 | Flux | 0～N個のデータを含むデータストリームを提供する    | https://projectreactor.io/docs/core/release/reference/#flux |
 | Mono | 0 or 1個のデータを含むデータストリームを提供する | https://projectreactor.io/docs/core/release/reference/#mono |
 
+#### Subscriber
+
+ReactorにおけるReactive StreamのPublisher interfaceの実装として代表的なものを以下に示す
+
+| 実装               | 概要                                              | 参考                                                                                               |
+|------------------|-------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| BaseSubscriber   | ユーザーが独自実装のSubscriberを構築する際のベースとなるクラス            | https://projectreactor.io/docs/core/release/reference/#_an_alternative_to_lambdas_basesubscriber |
+| LambdaSubscriber | Flux/Monoの提供しているsubscribeメソッド経由で実装できるSubscriber | -                                                                                                |
+
+Reactorでは、BaseSubscriberをユーザーが独自に実装して利用することも出来るが、Flux/Monoの提供しているsubscribeメソッドに対して、
+それぞれのイベント時の処理を実装した関数型インターフェースを引数として与えることで、間接的にLambdaSubscriberを実装し、onNextやonError,onCompleteなどの時の挙動を指定することもできる。
+
+#### Subscription
+
+ReactorではPublisher/Subscriberと異なり目立って実装されたクラスはない。そもそもユーザー側がrequestメソッドなどを呼び出すことを意識しないようにするという思想らしい。
+Subscriberの時に説明したように、subscribeメソッドに対して任意の関数型インターフェースを引数に与えたり、BaseSubscriberの拡張時にhookOnSubscribeメソッドをoverrideすることで挙動を変更することができる。
+
+#### Processor
+
+割愛
+
+### シンプルなReactorによるリアクティブプログラミングの実装
+
+Reactor(Reactive Stream)を用いたリアクティブプログラミングでは、基本的にはPublisherがデータストリームを提供し、Subscriber側で各データを受け取り処理を実施するというのが基本的な構成である。
+Publisherは提供するデータの性質に従って、Reactorより提供されているMono/Fluxいずれかを利用することができ、Subscriberは、ユーザー独自に実装することもできれば、Publisher側から提供されているメソッドを通じて実装することもできる。
