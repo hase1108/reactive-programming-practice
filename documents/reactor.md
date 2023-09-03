@@ -107,3 +107,38 @@ Subscriberの時に説明したように、subscribeメソッドに対して任�
 
 Reactor(Reactive Stream)を用いたリアクティブプログラミングでは、基本的にはPublisherがデータストリームを提供し、Subscriber側で各データを受け取り処理を実施するというのが基本的な構成である。
 Publisherは提供するデータの性質に従って、Reactorより提供されているMono/Fluxいずれかを利用することができ、Subscriberは、ユーザー独自に実装することもできれば、Publisher側から提供されているメソッドを通じて実装することもできる。
+また、基本的にPublisherはSubscriberされない限りデータストリームを流し始めないことに注意が必要。
+
+## Chapter2
+
+### Operator
+
+Chapter1で説明したように、最もシンプルな形のReactorによる実装では、PublisherとSubscriberのみで完結するが、その処理には限度がある。
+そこで、Reactorでは`operator`と呼ばれる種々のメソッドを提供することでデータストリームを様々な形で処理することが可能となっている。
+operatorは基本的には前段のPublisherに対して処理を追加し、新しいPublisherでラップして後段にデータを流していく。
+こうすることでPublisherは様々なoperatorによって順次処理が追加され、最終的にはSubscriberで処理されることになる。
+この動作はJavaにおけるStream APIと同じような挙動となる。
+
+※operator自体はReactive Streamには定義されていないことに注意
+
+なお、operatorの実装的には独自にoperatorクラスが存在しているわけではなく、各Publisherに定義されていることに注意すること。
+https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
+
+operatorは非常にたくさんの種類があることから、全て紹介することが不可能だが、代表的なものを以下に示す。
+
+#### Map
+
+#### FlatMap
+
+#### Filter
+
+### Publisher/Operator/Subscriberの関係
+
+Publisher/Operator/Subscriberは、従来の命令型プログラミングと比較すると相関がわかりにくい。
+そのため、理解の一助として、JavaDocなどでPublisherの提供するデータストリームがoperator/subscriberなどがどのように処理されるかが図で表されている。
+
+https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
+
+## Chapter3
+
+### エラーハンドリング

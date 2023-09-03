@@ -95,4 +95,21 @@ class MonoSampleTest extends Specification {
         then:
         true
     }
+
+    def "PublisherはSubscribeされない限りデータストリームを流し始めないこと"(){
+        given:
+        def num = 3
+
+        when:
+        def source = monoSample.simpleMono(num)
+                .map(i -> {
+                    System.out.printf("DataStream %d", i)
+                    return i
+                })
+
+
+        then:
+        true
+
+    }
 }

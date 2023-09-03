@@ -79,4 +79,20 @@ class FluxSampleTest extends Specification {
         true
     }
 
+    def "PublisherはSubscribeされない限りデータストリームを流し始めないこと"(){
+        given:
+        def num = 3
+
+        when:
+        def source = fluxSample.simpleFlux(num)
+                .map(i -> {
+                    System.out.printf("DataStream %d", i)
+                    return i
+                })
+
+        then:
+        true
+
+    }
+
 }
