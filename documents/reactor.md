@@ -69,6 +69,22 @@ SubscriptionはSubscriberとデータストリームの仲立ちをし、Publish
 
 ProcessorはSubscriberとPublisher両方の責務を負う。
 
+### 追記
+
+#### Reactorにおける各種オブジェクトとスレッドの関係性について
+
+> Reactor は、RxJava と同様、同時実行性に依存しないと考えることができます。つまり、同時実行モデルは強制されません。むしろ、開発者が主導権を握ることができます。ただし、だからといって、ライブラリによる同時実行の支援が妨げられるわけではありません。
+https://projectreactor.io/docs/core/release/reference/#schedulers
+
+基本的にはMonoやFluxを生成したスレッドで処理が実施され、それ以降のオペレータも同じスレッド上で実施される。
+
+https://stackoverflow.com/questions/62138638/what-does-the-term-concurrency-agnostic-means-exactly
+https://cero-t.hatenadiary.jp/entry/20171215/1513290305
+https://fits.hatenablog.com/entry/2016/12/08/232622
+
+ただし、subscribeOnやpublisherOnなどによってユーザーが任意に指定してマルチスレッドで実施することができる。
+詳しくは後のチャプターで
+
 ## Chapter1
 
 ### ReactorにおけるReactive Stream APIの実装
@@ -93,6 +109,8 @@ ReactorにおけるReactive StreamのPublisher interfaceの実装として代表
 
 Reactorでは、BaseSubscriberをユーザーが独自に実装して利用することも出来るが、Flux/Monoの提供しているsubscribeメソッドに対して、
 それぞれのイベント時の処理を実装した関数型インターフェースを引数として与えることで、間接的にLambdaSubscriberを実装し、onNextやonError,onCompleteなどの時の挙動を指定することもできる。
+
+https://projectreactor.io/docs/core/release/reference/#_an_alternative_to_lambdas_basesubscriber
 
 #### Subscription
 
@@ -131,14 +149,55 @@ Publisher/Operator/Subscriberは、従来の命令型プログラミングと比
 
 https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
 
-operatorは非常にたくさんの種類があることから、全て紹介することが不可能だが、代表的なものを以下に示す。
+operatorは非常にたくさんの種類があることから、全て紹介することが不可能なので、代表的な2つを以下に示す。
 
 #### Map
 
+Streamのmapと同じでデータストリームから取得できた要素を1:1で変換するオペレータになる。
+mapの特徴としては1:1で変換されることから、オペレータによる処理およびそれ以降の処理の順序性が担保されていることがあげられる。
+
+https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#map-java.util.function.Function-
+
 #### FlatMap
 
-#### Filter
+StreamのflatMapと同じでデータストリームから取得できた要素を1:Nで変換するオペレータになる。
+flatMapの特徴としては、mapと異なりその実際はオペレータのなかでsubscribeを実施していること、
+また1:Nで変換されることから、オペレータの処理自体は順序性が保証されているが、要素はフラットにされるため、それ以降の処理の順序性は保証されない。
+
+https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMap-java.util.function.Function-
+
+順序性を保持したい場合はconcatMapやflatMapSequentialがある
+https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#flatMapSequential-java.util.function.Function-
+https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html#concatMap-java.util.function.Function-
+
+https://mike-neck.hatenadiary.com/entry/reactor-flux-flatten-3-patterns
 
 ## Chapter3
 
 ### エラーハンドリング
+
+## Chapter4
+
+### Test
+
+## Chapter5
+
+### バックプレッシャー
+
+
+## Chapter6
+
+### Thread/Scheduler
+
+## Cahpter7
+
+### Sink
+
+## Chapter8
+
+### デバッグ
+
+## Cahpter 9
+
+### メトリクス
+
