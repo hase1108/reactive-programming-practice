@@ -11,7 +11,7 @@ class OperatorTest extends Specification{
 
     def fluxSample = new FluxSample()
 
-    def "mapのテスト"(){
+    def "mapのテスト: mapが要素を1:1で変換していること"(){
 
         given:
 
@@ -28,7 +28,7 @@ class OperatorTest extends Specification{
         true
     }
 
-    def "flatMaprのテスト"(){
+    def "flatMaprのテスト: flatmapが要素を1:1で変換していること"(){
 
         given:
 
@@ -45,23 +45,23 @@ class OperatorTest extends Specification{
         true
     }
 
-    def "flatMaprのテスト2"(){
+    def "flatMaprのテスト2: Fluxが要素を1:2で変換していること"(){
 
         given:
 
-        def flux = fluxSample.simpleFlux(100)
+        def flux = fluxSample.simpleFlux(10)
 
         when:
         flux.flatMap(i -> {
             System.out.println("mapped : " + i)
-            return Flux.just("String : " + i, String.valueOf(i))
+            return Flux.range(0, i)
         })
                 .subscribe(value -> System.out.println(value))
         then:
         true
     }
 
-    def "flatMaprのテスト3"(){
+    def "flatMaprのテスト3: FlatMapの順序性について"(){
 
         given:
 
@@ -83,7 +83,7 @@ class OperatorTest extends Specification{
         true
     }
 
-    def "flatMaprのテスト4"(){
+    def "concatMapのテスト: データストリームの入力の順番毎に全ての処理が実行されること"(){
 
         given:
 
@@ -105,7 +105,7 @@ class OperatorTest extends Specification{
         true
     }
 
-    def "flatMaprのテスト5"(){
+    def "flatMapSequentialのテスト:各operatorの処理がデータストリームの入力順になること"(){
 
         given:
 

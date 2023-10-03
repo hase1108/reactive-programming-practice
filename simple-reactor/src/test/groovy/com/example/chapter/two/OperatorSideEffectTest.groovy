@@ -1,0 +1,133 @@
+package com.example.chapter.two
+
+import com.example.chapter.one.FluxSample
+import reactor.core.scheduler.Schedulers
+import spock.lang.Specification
+
+class OperatorSideEffectTest extends Specification {
+
+    def fluxSample = new FluxSample()
+
+    def "logのテスト: logがどのような要素を出力しているか"() {
+
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux.log()
+            .map(i -> {
+                System.out.println("mapped : " + i)
+                return "String : " + i
+            })
+                .subscribe(value -> System.out.println(value))
+
+        then:
+        true
+    }
+
+    def "doOnNext: 副作用を伴う処理"(){
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux
+                .doOnNext(i -> {
+                    System.out.println("mapped : " + i)
+                })
+                .subscribe(value -> System.out.println(value))
+
+        then:
+        true
+    }
+
+    def "doOnNext: 副作用を伴う処理 外部ファイルへの書き込みが非同期に実行され成功する"(){
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux
+                .doOnNext(i -> {
+                    try (FileWriter writer = new FileWriter("output.txt", true)) {
+                        System.out.println("Value : " + i + " Thread : " + Thread.currentThread().getName())
+                        writer.write(i + "\n");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .map(i -> {
+                    System.out.println("Value : " + i + " Thread : " + Thread.currentThread().getName())
+                    System.out.println("mapped : " + i)
+                    return "String : " + i
+                })
+                .subscribe(value -> {
+                    System.out.println(value)
+                    System.out.println("Value : " + value +" Thread : " + Thread.currentThread().getName())})
+
+        then:
+        true
+    }
+    def "doOnNext: 副作用を伴う処理 外部ファイルへの書き込みが失敗する"(){
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux
+                .map(i -> {
+                    try (FileWriter writer = new FileWriter("output.txt", true)) {
+                        System.out.println("Value : " + i + " Thread : " + Thread.currentThread().getName())
+                        writer.write(i + "\n");
+                        return i
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .map(i -> {
+                    System.out.println("mapped : " + i)
+                    System.out.println("Value : " + i + " Thread : " + Thread.currentThread().getName())
+                    return "String : " + i
+                })
+                .subscribe(value -> {
+                    System.out.println(value)
+                    System.out.println("Value : " + value + " Thread : " + Thread.currentThread().getName())
+                })
+
+        then:
+        true
+    }
+
+    def "doOnNext: 副作用を伴う処理 外部ファイルへの書き込みが"(){
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux
+                .flatMap(i -> {
+                    try (FileWriter writer = new FileWriter("output.txt", true)) {
+                        System.out.println("Value : " + i + " Thread : " + Thread.currentThread().getName())
+                        writer.write(i + "\n")
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                })
+                .map(i -> {
+                    System.out.println("mapped : " + i)
+                    System.out.println("Value : " + i + " Thread : " + Thread.currentThread().getName())
+                    return "String : " + i
+                })
+                .subscribeOn(Schedulers.parallel())
+                .subscribe(value -> {
+                    System.out.println(value)
+                    System.out.println("Value : " + value + " Thread : " + Thread.currentThread().getName())
+                })
+
+        System.out.println("Thread : " + Thread.currentThread().getName())
+        Thread.sleep(10000L)
+        then:
+        true
+    }
+}

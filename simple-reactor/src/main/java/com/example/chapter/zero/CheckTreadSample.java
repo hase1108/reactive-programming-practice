@@ -4,7 +4,17 @@ import reactor.core.publisher.Flux;
 
 public class CheckTreadSample {
 
-    public void checkThreadNormal(int range){
+    public void checkThreadMapNormal(int range){
+        Flux.range(0,range)
+                .map(value -> {
+                    System.out.println("Now : " + value + " Thread : " + Thread.currentThread().getName());
+                    return value;
+                }).subscribe(value -> {
+                    System.out.println("Now : " + value + " Thread : " + Thread.currentThread().getName());
+                });
+    }
+
+    public void checkThreadFlatMapNormal(int range){
         Flux.range(0,range)
                 .map(value -> {
                     System.out.println("Now : " + value + " Thread : " + Thread.currentThread().getName());

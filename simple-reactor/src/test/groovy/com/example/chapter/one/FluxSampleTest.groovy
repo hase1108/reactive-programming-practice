@@ -1,5 +1,6 @@
 package com.example.chapter.one
 
+import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import spock.lang.Specification
 
@@ -89,6 +90,22 @@ class FluxSampleTest extends Specification {
                     System.out.printf("DataStream %d", i)
                     return i
                 })
+
+        then:
+        true
+
+    }
+
+    def "PublisherはSubscribeされないoperatoの内側のPublisherは外側のSubscribeに関係しない"(){
+        given:
+        def num = 3
+
+        when:
+        fluxSample.simpleFlux(num)
+                .map(i -> {
+                    Mono.just(1).doOnNext(value -> System.out.println("Mono : " + value))
+                    return i
+                }).subscribe(value -> System.out.printf("OnNext %d", value))
 
         then:
         true

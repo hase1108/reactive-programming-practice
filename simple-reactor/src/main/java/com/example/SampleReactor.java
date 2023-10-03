@@ -13,6 +13,6 @@ import java.util.function.Function;
 public class SampleReactor {
 
     public static void main(String[] args) {
-        new CheckTreadSample().checkThreadNormal(1000);
+        new CheckTreadSample().checkThreadMapNormal(1000);
     }
 }

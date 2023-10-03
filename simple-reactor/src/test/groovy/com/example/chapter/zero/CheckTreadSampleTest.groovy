@@ -9,7 +9,18 @@ class CheckTreadSampleTest extends Specification{
         def range = 1000
 
         when:
-        new CheckTreadSample().checkThreadNormal(range)
+        new CheckTreadSample().checkThreadMapNormal(range)
+
+        then:
+        true
+    }
+
+    def "thread3"(){
+        given:
+        def range = 1000
+
+        when:
+        new CheckTreadSample().checkThreadFlatMapNormal(range)
 
         then:
         true
