@@ -211,20 +211,23 @@ https://projectreactor.io/docs/core/release/api/reactor/core/publisher/Flux.html
 https://projectreactor.io/docs/core/release/reference/#error.handling
 https://projectreactor.io/docs/core/release/reference/#which.errors
 
-eactorにおけるエラーはその時点でストリームイベントを終了する挙動となり、Subscriberに定義されたメソッドとそのonErrorメソッドに伝搬していく。
-onErrorの処理を行う場合、エラーを発生させたストリームイベントは終了し、onErrorでまた新しくストリームイベントが開始されるようになる。
-同期、ブロッキング処理におけるエラーハンドリングとの対比を含め、以下にReactorにおける種々のハンドリング方式を乗せる。
-
-なお、種々のエラーハンドリングにおいて、特定のものを除いて、最初に記述したようにエラーが発生したデータストリームはエラーが発生した時点でそれ以降のデータの送出は停止されることに注意が必要である。
+Reactorにおける基本的なエラーの流れとしては、エラー発生時にSubscriber側のonErrorメソッドに定義された内容が実行され、大元のストリームイベントとしては終了する。
+そのため例えば1からインクリメントして10まで流れるようなFluxのデータストリームにおいて、3の時点でエラーが発生した場合、3以降の4,5,6,...は処理が実施されない。
+当然それだけではハンドリングに大きく制限が生じてしまうため、エラーハンドリングに利用できるoperatorが定義されている。
 
 エラーのハンドリングに利用できるOperatorは以下を参考のこと
 https://projectreactor.io/docs/core/release/reference/#which.errors
 
+また、通常のoperatorが対応できるエラーハンドリング方式についてもJavaDocに定義されているのでそちらも確認すること
+
+#### Reactorにおけるエラーハンドリング
+
+一般的な手続き型プログラミングにおけるエラーハンドリング方式をリアクティブプログラミングでおいて行う場合にどうするかを以下に示す。
+
 #### try-catchパターン
 
 
-上記コードはsubscribeメソッドにおけるエラーハンドリング可能なconsumerでハンドリングされる。
-通常のJavaコードのtry-catcheと同じようにoperator演算子で例外が発生した場合、それ以降の処理を打ち切ってハンドリングを実施する。
+通常のJavaコードのtry-catcheと同じようにoperator演算子で何らかの例外が発生した場合、それ以降の処理を打ち切ってSubscriberのonErrorで定義されている処理でエラーハンドリングを実施する。
 
 
 #### static fall backパターン
@@ -236,7 +239,7 @@ subscriber側ではなく、operatorである`onErrorReturn`でハンドリン�
 ```
 .onErrorReturn(e-> e.getMessage().equals("Flux : 3"),"Return2")
 ```
-onErrorReturnでは引数にpredicateを取ることができるので、例外が特定の条件のみにハンドリングを実施することができる。
+onErrorReturnでは引数に例外クラスやPredicateを引数に取るので、特定の条件のエラーのみハンドリングすることもできる
 
 #### catch and swallowパターン(エラーの隠ぺい)
 

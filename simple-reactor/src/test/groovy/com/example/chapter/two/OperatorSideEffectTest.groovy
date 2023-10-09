@@ -1,6 +1,7 @@
 package com.example.chapter.two
 
 import com.example.chapter.one.FluxSample
+import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import spock.lang.Specification
 
@@ -42,6 +43,101 @@ class OperatorSideEffectTest extends Specification {
         true
     }
 
+    def "doOnNext: 副作用を伴う処理2"(){
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux
+                .map(i -> {System.out.println(i)
+                return i})
+                .doOnNext(i -> {
+                    Thread.sleep(3000L)
+                    System.out.println("doOnNext1 : " + i)
+                })
+                .doOnNext(i -> {
+                    System.out.println("doOnNext2 : " + i)
+                })
+                .map(i -> {System.out.println(i)
+                    return i})
+                .subscribe(value -> System.out.println(value))
+
+        then:
+        true
+    }
+
+    def "doOnNext: 副作用を伴う処理3"(){
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux
+
+                .doOnNext(i -> {
+                    if(i == 3){
+                        throw new RuntimeException("test")
+                    }
+                }).onErrorContinue((e, i) -> System.out.println(e.getMessage() + " : " +i))
+                .doOnNext(i -> {
+                    System.out.println("doOnNext2 : " + i)
+                })
+                .map(i -> {System.out.println(i)
+                    return i})
+                .subscribe(value -> System.out.println(value),
+                e -> System.out.println(e.getMessage()))
+
+        then:
+        true
+    }
+
+    def "doOnNext: 副作用を伴う処理4"(){
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux
+
+                .map(i -> {
+                    if(i == 3){
+                        throw new RuntimeException("test")
+                    }
+                    return i
+                }).onErrorContinue((e, i) -> System.out.println(e.getMessage() + " : " +i))
+                .map(i -> {System.out.println(i)
+                    return i})
+                .subscribe(value -> System.out.println(value),
+                        e -> System.out.println(e.getMessage()))
+
+        then:
+        true
+    }
+
+    def "doOnNext: 副作用を伴う処理5"(){
+        given:
+
+        def flux = fluxSample.simpleFlux(5)
+
+        when:
+        flux
+
+                .flatMap(i -> {
+                    if(i == 3){
+                        throw new RuntimeException("test")
+                    }
+                    return Mono.just(i)
+                }).onErrorContinue((e, i) -> System.out.println(e.getMessage() + " : " +i))
+                .map(i -> {System.out.println(i)
+                    return i})
+                .subscribe(value -> System.out.println(value),
+                        e -> System.out.println(e.getMessage()))
+
+        then:
+        true
+    }
+
     def "doOnNext: 副作用を伴う処理 外部ファイルへの書き込みが非同期に実行され成功する"(){
         given:
 
@@ -57,7 +153,7 @@ class OperatorSideEffectTest extends Specification {
                         e.printStackTrace();
                     }
                 })
-                .map(i -> {
+                .doOnNext(i -> {
                     System.out.println("Value : " + i + " Thread : " + Thread.currentThread().getName())
                     System.out.println("mapped : " + i)
                     return "String : " + i
