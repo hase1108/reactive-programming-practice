@@ -3,6 +3,7 @@ package com.example.chapter.three
 import com.example.OriginalException
 import com.example.OriginalException2
 import com.example.chapter.one.FluxSample
+import com.example.chapter.three.WhenInputThreeThrowException
 import reactor.core.publisher.Flux
 import spock.lang.Specification
 

@@ -1,6 +1,7 @@
 package com.example.chapter.three
 
 import com.example.chapter.one.FluxSample
+import com.example.chapter.three.WhenInputThreeThrowException
 import spock.lang.Specification
 
 class HandlingTryCatchException extends Specification{

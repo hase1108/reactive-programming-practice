@@ -253,6 +253,27 @@ static fall backと異なり、動的に返す値を変化させるパターン
 
 #### Dynamic Fall back
 
+例外クラスからフォールバック値を計算する。
+実装的にはonErrorResumeを用い、例外クラスからフォールバック値を計算するだけなので割愛
+
+#### Catch And Rethrow
+
+受け取った例外を任意の例外でWrapして再度投げる。
+onErrorResumeを利用するやり方とonErrorMapで行うやり方がある。
+
+#### Log or React on the side
+
+エラーの伝搬自体は手を加えず、エラー発生時に何らかの処理を実施したい場合はdoOnErrorを利用する。
+
+#### finally / try-with-resource
+
+通常の命令型プログラミングにおけるfinallyに相当する処理もdoFinallyというoperatorで実施できる。
+doFinallyで定義された処理は正常/異常終了もしくはキャンセルに関わらずシーケンスが終了する際に実施される。
+
+try-with-resourceと同等の処理を行う場合はusingを利用する
+
+
+
 通常、エラーが発生した場合データストリームが終了するが、onErrorContinueにおいて、Publisherでラップしてやることでデータストリームを終了せずに実行することもできる。
 ```java
 public class SampleReactor {
