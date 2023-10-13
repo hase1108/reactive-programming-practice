@@ -220,7 +220,7 @@ https://projectreactor.io/docs/core/release/reference/#which.errors
 
 また、通常のoperatorが対応できるエラーハンドリング方式についてもJavaDocに定義されているのでそちらも確認すること
 
-#### Reactorにおけるエラーハンドリング
+### Reactorにおけるエラーハンドリング
 
 一般的な手続き型プログラミングにおけるエラーハンドリング方式をリアクティブプログラミングでおいて行う場合にどうするかを以下に示す。
 
@@ -272,97 +272,9 @@ doFinallyで定義された処理は正常/異常終了もしくはキャンセ�
 
 try-with-resourceと同等の処理を行う場合はusingを利用する
 
+## Chapter 3-2
 
-
-通常、エラーが発生した場合データストリームが終了するが、onErrorContinueにおいて、Publisherでラップしてやることでデータストリームを終了せずに実行することもできる。
-```java
-public class SampleReactor {
-
-    public static void main(String[] args) {
-        Flux.range(1, 10)
-                .flatMap(SampleReactor::processNumber)
-                .onErrorContinue((error, value) ->{
-                    System.out.println("test");
-                })
-                .subscribe(System.out::println,
-                        error -> System.out.println("ERROR " + error.getMessage()));
-    }
-
-    public static Mono<Integer> processNumber(int num) {
-        if (num == 5) {
-            return Mono.error(new RuntimeException("Error occurred for number 5."));
-        }
-        return Mono.just(num);
-    }
-}
-```
-
-```java
-public class SampleReactor {
-
-    public static void main(String[] args) {
-        Flux.range(1, 10)
-                .flatMap(value -> processNumber(value)
-                        .onErrorResume(e -> Flux.just(value * 2)))
-                .subscribe(System.out::println,
-                        error -> System.out.println("ERROR " + error.getMessage()));
-    }
-
-    public static Flux<Integer> processNumber(int num) {
-        if (num == 5) {
-            return Flux.error(new RuntimeException("Error occurred for number 5."));
-        }
-        return Flux.just(num);
-    }
-}
-```
-
-processNumberであらたなデータストリームが生成されているので、上記の場合は大元のデータストリームが中止されることはない。
-
-```java
-public class SampleReactor {
-
-    public static void main(String[] args) {
-        Flux.range(1, 10)
-                .flatMap(SampleReactor::processNumber)
-                .onErrorMap(e -> new RuntimeException("Error Fall back"))
-                .subscribe(System.out::println,
-                        error -> System.out.println("ERROR " + error.getMessage()));
-    }
-
-    public static Flux<Integer> processNumber(int num) {
-        if (num == 5) {
-            return Flux.error(new RuntimeException("Error occurred for number 5."));
-        }
-        return Flux.just(num);
-    }
-}
-```
-また、上記のようにエラーを再度Wrapすることもできる。
-その他に、通常のストリームには影響せずにログなどに出力したい場合は以下のようにする。
-
-```java
-public class SampleReactor {
-
-    public static void main(String[] args) {
-        Flux.range(1, 10)
-                .flatMap(value -> SampleReactor.processNumber(value).doOnError(e -> System.out.println(e.getMessage()))) //1
-                .doOnError(e -> System.out.println(e.getMessage())) // 2
-                .subscribe(System.out::println,
-                        error -> System.out.println("ERROR " + error.getMessage()));
-    }
-
-    public static Flux<Integer> processNumber(int num) {
-        if (num == 5) {
-            return Flux.error(new RuntimeException("Error occurred for number 5."));
-        }
-        return Flux.just(num);
-    }
-}
-```
-
-1もしくは2の位置にてdoOnErrorを用いることによって、ストリームに影響せずに種々の処理を行える。
-`doOn`がつくメソッドでは他も同様に、主流のデータストリームに影響を及ぼさずに、ストリームの中身のデータを除き、副作用を生じさせることもできる。
+### Retry
 
 ## Chapter4
 

@@ -43,7 +43,7 @@ class FinallyAndTryWithResourceException extends Specification{
     }
 
 
-    def "using : flatMapでエラーをログに出力するがシーケンス自体に変更は加えない"(){
+    def "using :try-with-resourceを実現"(){
         when:
         Flux.using(() -> Files.lines(Paths.get("E:/workspace/reactive-programming-practice/.gitignore")),
                 Flux::fromStream,
