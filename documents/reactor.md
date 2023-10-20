@@ -272,9 +272,10 @@ doFinallyで定義された処理は正常/異常終了もしくはキャンセ�
 
 try-with-resourceと同等の処理を行う場合はusingを利用する
 
-## Chapter 3-2
+#### retry
 
-### Retry
+https://projectreactor.io/docs/core/release/reference/#_retrying
+シンプルな`retry()`でリトライを実施する場合は、シーケンス全体が再試行される。
 
 ## Chapter4
 
