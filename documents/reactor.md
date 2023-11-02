@@ -281,6 +281,45 @@ https://projectreactor.io/docs/core/release/reference/#_retrying
 
 ### Test
 
+`reactor-test`を利用したテスト手法を紹介する。
+reactor-testを用いてテストすることで以下の3つの機能を利用でき、複雑なReactorのテストを簡単に実装できる
+
+- `StepVerifier`用いて定義されたサブスクリプション時に発生する期待値と実際の値を検証できる
+- `TestPublisher`を用いたシーケンスに定義されたオペレータの動作の検証
+- `PublisherProbe`を用いたシーケンスに定義されたフローが実装に呼び出されているか検証
+
+#### StepVerifier
+
+StepVerifierでは、定義されているPublisherがSubscribeされた時にどのようなイベントが発生するか期待値を記述し、実際に動作した時と比較検証するテスト時に利用する。
+特に、Publisherが次にどのようなイベント(onNextやonErrorなど)が発生するか、Publisherがどのような値を出力するか、また時間を考慮した検証も行う事ができる。
+
+StepVerifierを利用する場合、上記のように検証したい事柄をテストシナリオのように組み立て、fluent interfaceでコード上に表現するでことができる。
+
+ex)
+```
+        StepVerifier.create(${Publisher})
+        .expectNext(${onNextで期待されるデータ})
+        .expectNext(${onNextで期待されるデータ})
+        .expectComplete()//エラーが発生せず、onCompleteが実行されること
+        .verify(); // 検証の実行
+```
+
+StepVerifierで検証用のステップは以下に定義されている。
+https://projectreactor.io/docs/test/release/api/reactor/test/StepVerifier.Step.html
+
+
+#### TestPublisher
+
+Subscriber側に対して任意のデータを流してSubscriberの検証したい場合に`TestPulisher`が利用できる。
+https://projectreactor.io/docs/core/release/reference/#_manually_emitting_with_testpublisher
+
+どのようなデータを流すか、completeやerrorのイベントを発生させるか等を手動で設定することができる。
+
+#### PublisherProbe
+
+条件分岐などを含み、複雑なフローが定義されているシーケンスにおいて、シーケンス上のどのようなパスを通ったかを検証する際に利用出来るのがPublisherProbeになる。
+PublishprobeをFlux or Monoとして投入することでprobeの名の通りどのようなイベントが発生したかを検証することができる。
+
 ## Chapter5
 
 ### バックプレッシャー

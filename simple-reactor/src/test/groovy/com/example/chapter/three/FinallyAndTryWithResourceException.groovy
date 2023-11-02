@@ -6,10 +6,10 @@ import spock.lang.Specification
 
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.sql.Connection
 
 class FinallyAndTryWithResourceException extends Specification{
     def fluxSample = new FluxSample()
-
     def "finally : 正常終了時の最後に何らかの処理を実施する"(){
         given:
 
