@@ -324,6 +324,21 @@ PublishprobeをFlux or Monoとして投入することでprobeの名の通りど
 
 ### バックプレッシャー
 
+https://projectreactor.io/docs/core/release/reference/#reactive.backpressure
+
+Chapter0,1で述べたように、Reactorでは受信側のキャパシティを超えたメッセージを送信しないようにするためバックプレッシャーを実装している。
+このバックプレッシャーは、通常受信側が送信側に対して受け入れ可能なキャパシティを指定し、送信側はそのキャパシティに従ってメッセージを送信するというフローになっている。
+
+今までのchapterで紹介した時のようにシンプルなsubscriberを登録する場合、通常は受信側は送信側に対してlong.MAX_VALUEの数(無制限)を送信するように要求する。
+ex)LambdaSubscriber.java
+https://github.com/reactor/reactor-core/blob/main/reactor-core/src/main/java/reactor/core/publisher/LambdaSubscriber.java#L105-L122
+
+当然上記部分はユーザー側でカスタマイズすることも可能である。
+
+subscriber側のrequestシグナルを変更してsubscriber側の要求より多くデータを送信したりrequestをする前にデータを送信することもできる。
+
+例えば`buffer`演算子はサブスクライバが1つのデータを要求した場合に、buffer(N)で指定したN個のデータをPublisherに要求する。
+`prefetch`特定のoperator演算子のオプションとして利用することができ、サブスクライバからのrequestに先んじてpublisher側からデータを取得することができる。
 
 ## Chapter6
 
